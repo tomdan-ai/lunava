@@ -31,6 +31,17 @@ export async function getNeynarUser(fid: number): Promise<User | null> {
   }
 }
 
+export async function searchNeynarUsers(query: string): Promise<User[] | null> {
+  try {
+    const client = getNeynarClient();
+    const searchResponse = await client.searchUser({ q: query });
+    return searchResponse.result.users;
+  } catch (error) {
+    console.error('Error searching for Neynar users:', error);
+    return null;
+  }
+}
+
 type SendMiniAppNotificationResult =
   | {
       state: "error";
@@ -51,26 +62,27 @@ export async function sendNeynarMiniAppNotification({
 }): Promise<SendMiniAppNotificationResult> {
   try {
     const client = getNeynarClient();
-    const targetFids = [fid];
-    const notification = {
+    
+    if (!process.env.NEYNAR_CLIENT_ID) {
+      throw new Error('NEYNAR_CLIENT_ID not configured');
+    }
+
+    await client.notifyUser({
+      clientId: process.env.NEYNAR_CLIENT_ID,
+      targetFid: fid,
       title,
       body,
-      target_url: APP_URL,
-    };
-
-    const result = await client.publishFrameNotifications({ 
-      targetFids, 
-      notification 
+      url: APP_URL,
     });
 
-    if (result.notification_deliveries.length > 0) {
-      return { state: "success" };
-    } else if (result.notification_deliveries.length === 0) {
-      return { state: "no_token" };
-    } else {
-      return { state: "error", error: result || "Unknown error" };
+    return { state: "success" };
+  } catch (error: any) {
+    if (error?.response?.status === 429) {
+      return { state: "rate_limit" };
     }
-  } catch (error) {
+    if (error?.message?.includes('notification token')) {
+      return { state: "no_token" };
+    }
     return { state: "error", error };
   }
-} 
+}

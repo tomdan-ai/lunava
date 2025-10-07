@@ -98,20 +98,53 @@ async function startDev() {
   }
 
   const useTunnel = process.env.USE_TUNNEL === 'true';
+  const configuredTunnelHost = process.env.TUNNEL_HOST; // e.g. https://loca.lt or https://localtunnel.me
   let miniAppUrl;
 
   if (useTunnel) {
-    // Start localtunnel and get URL
-    tunnel = await localtunnel({ port: port });
-    let ip;
-    try {
-      ip = await fetch('https://ipv4.icanhazip.com').then(res => res.text()).then(ip => ip.trim());
-    } catch (error) {
-      console.error('Error getting IP address:', error);
+    // Helper: fetch public IPv4 with timeout
+    const getPublicIp = async () => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch('https://ipv4.icanhazip.com', { signal: controller.signal });
+        clearTimeout(timeout);
+        const text = await res.text();
+        return text.trim();
+      } catch {
+        return undefined;
+      }
+    };
+
+    // Helper: attempt to open a tunnel with an optional host
+    const openTunnel = async (host) => {
+      if (host) return await localtunnel({ port, host });
+      return await localtunnel({ port });
+    };
+
+    // Try configured host first, then common hosts, then default
+    const hostCandidates = [
+      configuredTunnelHost,
+      'https://loca.lt',
+      'https://localtunnel.me',
+      undefined,
+    ].filter(Boolean);
+
+    let tunnelOpened = false;
+    for (const host of hostCandidates) {
+      try {
+        tunnel = await openTunnel(host);
+        tunnelOpened = true;
+        break;
+      } catch (e) {
+        console.error(`Failed to start tunnel${host ? ` via ${host}` : ''}:`, e?.message || e);
+      }
     }
 
-    miniAppUrl = tunnel.url;
-    console.log(`
+    if (tunnelOpened && tunnel?.url) {
+      const ip = await getPublicIp();
+      miniAppUrl = tunnel.url;
+      console.log(`
 🌐 Local tunnel URL: ${tunnel.url}
 
 💻 To test on desktop:
@@ -133,6 +166,21 @@ async function startDev() {
    4. Enter this URL: ${tunnel.url}
    5. Click "Preview" (note that it may take ~10 seconds to load)
 `);
+    } else {
+      // Fallback: proceed without tunnel to keep Next.js dev server running
+      miniAppUrl = `http://localhost:${port}`;
+      console.warn(`
+⚠️ Unable to establish a tunnel. Continuing without a tunnel.
+
+💻 To test your mini app locally:
+   1. Open the Warpcast Mini App Developer Tools: https://warpcast.com/~/developers
+   2. Scroll down to the "Preview Mini App" tool
+   3. Enter this URL: ${miniAppUrl}
+   4. Click "Preview" to test your mini app (note that it may take ~5 seconds to load the first time)
+
+Tip: Set USE_TUNNEL=true and optionally TUNNEL_HOST (e.g. https://loca.lt).
+`);
+    }
   } else {
     miniAppUrl = `http://localhost:${port}`;
     console.log(`
