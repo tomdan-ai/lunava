@@ -1,4 +1,5 @@
 import { FrameRequest, getFrameMessage, getFrameHtmlResponse } from '@coinbase/onchainkit/frame';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { APP_URL } from '~/lib/constants';
 
