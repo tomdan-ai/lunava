@@ -64,7 +64,6 @@ export async function GET(request: NextRequest) {
             padding: '60px',
           }}
         >
-          {/* Main Card Container */}
           <div
             style={{
               display: 'flex',
@@ -79,7 +78,6 @@ export async function GET(request: NextRequest) {
               width: '100%',
             }}
           >
-            {/* Profile Picture */}
             <div
               style={{
                 width: '160px',
@@ -105,7 +103,6 @@ export async function GET(request: NextRequest) {
               />
             </div>
 
-            {/* User Info */}
             <div
               style={{
                 display: 'flex',
@@ -152,7 +149,6 @@ export async function GET(request: NextRequest) {
               </div>
             </div>
 
-            {/* Bio */}
             {user.profile?.bio?.text && (
               <p
                 style={{
@@ -170,7 +166,6 @@ export async function GET(request: NextRequest) {
               </p>
             )}
 
-            {/* Stats */}
             <div
               style={{
                 display: 'flex',
@@ -242,7 +237,6 @@ export async function GET(request: NextRequest) {
               )}
             </div>
 
-            {/* Verified Addresses */}
             {user.verified_addresses && (
               <div
                 style={{
@@ -305,7 +299,6 @@ export async function GET(request: NextRequest) {
             )}
           </div>
 
-          {/* Footer Branding */}
           <div
             style={{
               display: 'flex',

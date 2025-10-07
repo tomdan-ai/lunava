@@ -25,18 +25,6 @@ interface UserProfile {
   };
 }
 
-/**
- * HomeTab component displays the main landing content for the mini app.
- *
- * This is the default tab that users see when they first open the mini app.
- * It provides a simple welcome message and placeholder content that can be
- * customized for specific use cases.
- *
- * @example
- * ```tsx
- * <HomeTab />
- * ```
- */
 export function HomeTab() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
@@ -67,14 +55,6 @@ export function HomeTab() {
       if (data.users && data.users.length > 0) {
         const foundUser = data.users[0];
         setUser(foundUser);
-        console.log("User found:", {
-          fid: foundUser.fid,
-          pfp: foundUser.pfp_url,
-          username: foundUser.username,
-          display_name: foundUser.display_name,
-          bio: foundUser.profile?.bio?.text || "No bio available",
-          followers: foundUser.follower_count,
-        });
       } else {
         setError("User not found");
       }
@@ -176,7 +156,7 @@ export function HomeTab() {
               <div className="text-center">
                 <p
                   className={`text-sm px-3 py-2 rounded-lg ${
-                    error.includes("copied") || error.includes("success")
+                    error.includes("copied")
                       ? "text-green-600 bg-green-50 dark:bg-green-900/20"
                       : "text-red-500 bg-red-50 dark:bg-red-900/20"
                   }`}
@@ -211,7 +191,7 @@ export function HomeTab() {
                 Profile Card Generated! 🎉
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Preview your card and download, share, or cast it
+                Preview your card and download or share the image
               </p>
             </div>
             <ProfileCard user={user} />
@@ -257,7 +237,7 @@ export function HomeTab() {
                     text: `Check out this beautiful profile card for @${user.username}! 🎨\n\nGenerated with Lunava ✨`,
                     embeds: [
                       {
-                        url: `${APP_URL}/frame/${user.username}`,
+                        url: `${APP_URL}/api/generate-card?username=${user.username}`,
                       },
                     ],
                   }}
@@ -277,15 +257,17 @@ export function HomeTab() {
             {/* Frame Preview Link */}
             <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-center">
               <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                Frame URL (shareable on Farcaster):
+                Direct image link (800x1000px, optimized for social sharing):
               </p>
               <a
-                href={`${APP_URL}/frame/${user.username}`}
+                href={`/api/generate-card?username=${encodeURIComponent(
+                  user.username
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:text-primary-dark text-sm font-mono break-all"
               >
-                {APP_URL}/frame/{user.username}
+                /api/generate-card?username={user.username}
               </a>
             </div>
           </div>
