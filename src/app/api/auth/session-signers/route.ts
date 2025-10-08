@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getNeynarClient } from '~/lib/neynar';
 
 export async function GET(request: Request) {
   try {
@@ -14,19 +13,53 @@ export async function GET(request: Request) {
       );
     }
 
-    const client = getNeynarClient();
-    const data = await client.fetchSigners({ message, signature });
-    const signers = data.signers;
+    const apiKey = process.env.NEYNAR_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'Neynar API key is not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Make direct API call instead of using deprecated getNeynarClient
+    const response = await fetch(
+      `https://api.neynar.com/v2/farcaster/signers?message=${encodeURIComponent(
+        message
+      )}&signature=${encodeURIComponent(signature)}`,
+      {
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Neynar API error: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    const signers = data.signers || [];
 
     // Fetch user data if signers exist
     let user = null;
     if (signers && signers.length > 0 && signers[0].fid) {
-      const {
-        users: [fetchedUser],
-      } = await client.fetchBulkUsers({
-        fids: [signers[0].fid],
-      });
-      user = fetchedUser;
+      const userResponse = await fetch(
+        `https://api.neynar.com/v2/farcaster/user/bulk?fids=${signers[0].fid}`,
+        {
+          headers: {
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        user = userData.users?.[0] || null;
+      }
     }
 
     return NextResponse.json({
