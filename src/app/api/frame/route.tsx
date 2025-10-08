@@ -49,7 +49,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   try {
     const body = await req.json().catch(() => ({}));
     const searchParams = new URL(req.url).searchParams;
-    const username = searchParams.get('username') || '';
+    const _username = searchParams.get('username') || ''; // Fixed: changed from 'username' to '_username'
     const action = searchParams.get('action') || '';
 
     // Extract frame data from the request body
@@ -134,3 +134,12 @@ export async function GET(req: NextRequest): Promise<Response> {
 }
 
 export const dynamic = 'force-dynamic';
+
+// import { NextRequest } from "next/server";
+// import { getUser } from "~/lib/neynar";
+// import { APP_NAME } from "~/lib/constants"; 
+
+// export async function GET(request: NextRequest) {
+//   const { searchParams } = new URL(request.url);
+//   const _username = searchParams.get('username'); // Prefix with underscore to indicate intentionally unused
+// }
