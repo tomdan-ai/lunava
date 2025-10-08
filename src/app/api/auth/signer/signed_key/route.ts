@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getNeynarClient } from '~/lib/neynar';
 import { mnemonicToAccount } from 'viem/accounts';
 import {
   SIGNED_KEY_REQUEST_TYPE,
@@ -34,25 +33,34 @@ export async function POST(request: Request) {
     // Get the app's account from seed phrase
     const seedPhrase = process.env.SEED_PHRASE;
     const shouldSponsor = process.env.SPONSOR_SIGNER === 'true';
+    const apiKey = process.env.NEYNAR_API_KEY;
 
-    if (!seedPhrase) {
+    if (!seedPhrase || !apiKey) {
       return NextResponse.json(
-        { error: 'App configuration missing (SEED_PHRASE or FID)' },
+        { error: 'App configuration missing (SEED_PHRASE, NEYNAR_API_KEY, or FID)' },
         { status: 500 }
       );
     }
 
-    const neynarClient = getNeynarClient();
-
     const account = mnemonicToAccount(seedPhrase);
 
-    const {
-      user: { fid },
-    } = await neynarClient.lookupUserByCustodyAddress({
-      custodyAddress: account.address,
-    });
+    // Make direct API call to lookup user by custody address
+    const userResponse = await fetch(
+      `https://api.neynar.com/v2/farcaster/user/custody-address?custody_address=${account.address}`,
+      {
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-    const appFid = fid;
+    if (!userResponse.ok) {
+      throw new Error(`Failed to lookup user by custody address: ${userResponse.status} ${userResponse.statusText}`);
+    }
+
+    const userData = await userResponse.json();
+    const appFid = userData.user.fid;
 
     // Generate deadline (24 hours from now)
     const deadline = Math.floor(Date.now() / 1000) + 86400;
@@ -71,15 +79,28 @@ export async function POST(request: Request) {
       },
     });
 
-    const signer = await neynarClient.registerSignedKey({
-      appFid,
-      deadline,
-      signature,
-      signerUuid,
-      ...(redirectUrl && { redirectUrl }),
-      ...(shouldSponsor && { sponsor: { sponsored_by_neynar: true } }),
+    // Make direct API call to register signed key
+    const registerResponse = await fetch('https://api.neynar.com/v2/farcaster/signer/signed_key', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        app_fid: appFid,
+        deadline,
+        signature,
+        signer_uuid: signerUuid,
+        ...(redirectUrl && { redirect_url: redirectUrl }),
+        ...(shouldSponsor && { sponsor: { sponsored_by_neynar: true } }),
+      }),
     });
 
+    if (!registerResponse.ok) {
+      throw new Error(`Failed to register signed key: ${registerResponse.status} ${registerResponse.statusText}`);
+    }
+
+    const signer = await registerResponse.json();
     return NextResponse.json(signer);
   } catch (error) {
     console.error('Error registering signed key:', error);
