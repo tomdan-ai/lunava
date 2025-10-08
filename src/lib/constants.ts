@@ -47,7 +47,7 @@ export const APP_TAGS: string[] = ['fun', 'games', 'socials', 'followers', 'enga
  * URL for the app's icon image.
  * Used in app store listings and UI elements.
  */
-export const APP_ICON_URL: string = `${APP_URL}/icon.png`;
+export const APP_ICON_URL: string = `${APP_URL}/api/icon`;
 
 /**
  * URL for the app's Open Graph image.
