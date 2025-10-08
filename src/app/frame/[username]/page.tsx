@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { APP_URL, APP_NAME, APP_DESCRIPTION } from "~/lib/constants";
+import { APP_URL, APP_NAME } from "~/lib/constants";
 
 export const revalidate = 300;
 
