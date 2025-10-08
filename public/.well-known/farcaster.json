@@ -1,0 +1,18 @@
+{
+"miniapp": {
+"version": "1",
+"name": "Lunava",
+"homeUrl": "https://lunava-sand.vercel.app",
+"iconUrl": "https://lunava-sand.vercel.app/icon.png",
+"imageUrl": "https://lunava-sand.vercel.app/api/opengraph-image",
+"buttonTitle": "Launch Lunava",
+"splashImageUrl": "https://lunava-sand.vercel.app/splash.png",
+"splashBackgroundColor": "#f7f7f7",
+"webhookUrl": "https://api.neynar.com/f/app/23a9aecb-b75b-42b1-aaeb-91aab6d2bdb7/event"
+},
+"accountAssociation": {
+  "header": "eyJmaWQiOjEzMzYxNzAsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg1MWNlNEQzMzVkM0JiMzg4ODBhMzY2MUIyZjJDMTdENjA2MUEyNkY4In0",
+  "payload": "eyJkb21haW4iOiJsdW5hdmEtc2FuZC52ZXJjZWwuYXBwIn0",
+  "signature": "MHhiMTQxZDA4OTlkOTZkYTY0ODNmMmJmZTI4NTE1ZmI0ZWQ2ZWM0YjM3OWI4MmZkMjYwMTFjNGViNWU0MTEwY2MxNGVlMmI2NGViNjhlNzhjMDI2NmQ1NWY0ZWU5MDlmN2UwYTExZjQwYTE4MDgzNWE0NjRmNWI1ZjBlOTRhYTY0MTFj"
+}
+}
