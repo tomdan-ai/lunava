@@ -73,6 +73,45 @@ export async function getUser(fid: number): Promise<User | null> {
   }
 }
 
+// Alias for backwards compatibility with opengraph-image route
+export const getNeynarUser = getUser;
+
+// Add missing sendNeynarMiniAppNotification function
+export async function sendNeynarMiniAppNotification({
+  fid,
+  title,
+  body,
+}: {
+  fid: number;
+  title: string;
+  body: string;
+}) {
+  try {
+    const response = await fetch('https://api.neynar.com/v2/farcaster/notifications', {
+      method: 'POST',
+      headers: {
+        'x-api-key': NEYNAR_API_KEY!,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fid,
+        title,
+        body,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Neynar notification API error:', response.statusText);
+      return { state: "error", error: response.statusText };
+    }
+
+    return { state: "success" };
+  } catch (error) {
+    console.error('Error sending Neynar notification:', error);
+    return { state: "error", error };
+  }
+}
+
 // Legacy function for backwards compatibility with other routes
 export function getNeynarClient() {
   throw new Error('getNeynarClient is deprecated - use direct API calls instead');
