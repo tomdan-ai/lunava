@@ -1,10 +1,29 @@
 import { NextResponse } from 'next/server';
-import { getNeynarClient } from '~/lib/neynar';
 
 export async function POST() {
   try {
-    const neynarClient = getNeynarClient();
-    const signer = await neynarClient.createSigner();
+    const apiKey = process.env.NEYNAR_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'Neynar API key is not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Make direct API call instead of using deprecated getNeynarClient
+    const response = await fetch('https://api.neynar.com/v2/farcaster/signer', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Neynar API error: ${response.status} ${response.statusText}`);
+    }
+
+    const signer = await response.json();
     return NextResponse.json(signer);
   } catch (error) {
     console.error('Error fetching signer:', error);
@@ -27,10 +46,27 @@ export async function GET(request: Request) {
   }
 
   try {
-    const neynarClient = getNeynarClient();
-    const signer = await neynarClient.lookupSigner({
-      signerUuid,
+    const apiKey = process.env.NEYNAR_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'Neynar API key is not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Make direct API call instead of using deprecated getNeynarClient
+    const response = await fetch(`https://api.neynar.com/v2/farcaster/signer?signerUuid=${encodeURIComponent(signerUuid)}`, {
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
     });
+
+    if (!response.ok) {
+      throw new Error(`Neynar API error: ${response.status} ${response.statusText}`);
+    }
+
+    const signer = await response.json();
     return NextResponse.json(signer);
   } catch (error) {
     console.error('Error fetching signed key:', error);
