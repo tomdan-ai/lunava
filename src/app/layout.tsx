@@ -21,7 +21,7 @@ const lato = Lato({
 // Mini App embed configuration
 const miniappEmbed = {
   version: "1",
-  imageUrl: `${APP_URL}/api/opengraph-image`,
+  imageUrl: `${APP_URL}/api/thumbnail`, // Using dedicated thumbnail
   button: {
     title: "🎨 Generate Card",
     action: {
@@ -44,9 +44,9 @@ export const metadata: Metadata = {
     siteName: APP_NAME,
     images: [
       {
-        url: `${APP_URL}/api/opengraph-image`,
+        url: `${APP_URL}/api/thumbnail`, // Using thumbnail for social sharing too
         width: 1200,
-        height: 630,
+        height: 800,
         alt: APP_NAME,
       },
     ],
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: APP_NAME,
     description: APP_DESCRIPTION,
-    images: [`${APP_URL}/api/opengraph-image`],
+    images: [`${APP_URL}/api/thumbnail`],
   },
   other: {
     'fc:miniapp': JSON.stringify(miniappEmbed),
@@ -73,10 +73,8 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${montserrat.variable} ${lato.variable}`}>
-        <Providers>
-          <Toaster />
-          {children}
-        </Providers>
+        <Toaster />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
