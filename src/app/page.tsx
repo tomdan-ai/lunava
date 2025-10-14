@@ -5,14 +5,14 @@ import { APP_NAME, APP_DESCRIPTION, APP_URL } from "~/lib/constants";
 export async function generateMetadata(): Promise<Metadata> {
   const miniAppEmbed = {
     version: "1",
-    imageUrl: `${APP_URL}/api/thumbnail`, // Using dedicated thumbnail
+    imageUrl: `${APP_URL}/home.png`, // Fixed: Using API route
     button: {
       title: "🎨 Create Profile Card",
       action: {
-        type: "launch_frame",
+        type: "launch_miniapp", // Fixed: Using launch_miniapp
         name: APP_NAME,
         url: APP_URL,
-        splashImageUrl: `${APP_URL}/icon.png`,
+        splashImageUrl: `${APP_URL}/splash.png`,
         splashBackgroundColor: "#8b5cf6"
       }
     }

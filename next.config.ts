@@ -2,12 +2,21 @@
 import type { NextConfig } from 'next'
  
 const nextConfig: NextConfig = {
-  async redirects() {
+  // Remove the redirects - we'll use the static file instead
+  async headers() {
     return [
       {
-        source: '/.well-known/farcaster.json',
-        destination: 'https://api.farcaster.xyz/miniapps/hosted-manifest/0199c4ae-4839-f4b6-4414-06632fe4312a',
-        permanent: false,
+        source: '/.well-known/(.*)',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/json',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600',
+          },
+        ],
       },
     ]
   },

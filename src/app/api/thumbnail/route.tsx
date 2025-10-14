@@ -125,6 +125,10 @@ export async function GET() {
     {
       width: 1200,
       height: 800, // 3:2 aspect ratio for Mini App compatibility
+      headers: {
+        'Cache-Control': 'public, immutable, no-transform, max-age=3600', // Cache for 1 hour
+        'Content-Type': 'image/png',
+      },
     }
   );
 }
