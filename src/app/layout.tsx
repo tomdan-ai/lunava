@@ -21,14 +21,14 @@ const lato = Lato({
 // Mini App embed configuration
 const miniappEmbed = {
   version: "1",
-  imageUrl: `${APP_URL}/api/thumbnail`, // Using dedicated thumbnail
+  imageUrl: `${APP_URL}/home.png`, // Fixed: Using API route instead of static file
   button: {
     title: "🎨 Generate Card",
     action: {
-      type: "launch_frame",
+      type: "launch_miniapp", // Fixed: Using launch_miniapp instead of launch_frame
       name: APP_NAME,
       url: APP_URL,
-      splashImageUrl: `${APP_URL}/icon.png`,
+      splashImageUrl: `${APP_URL}/splash.png`,
       splashBackgroundColor: "#8b5cf6"
     }
   }
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: APP_NAME,
     images: [
       {
-        url: `${APP_URL}/api/thumbnail`, // Using thumbnail for social sharing too
+        url: `${APP_URL}/api/thumbnail`,
         width: 1200,
         height: 800,
         alt: APP_NAME,

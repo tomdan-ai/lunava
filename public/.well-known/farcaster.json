@@ -4,7 +4,7 @@
     "version": "1",
     "iconUrl": "https://lunava-sand.vercel.app/icon.png",
     "homeUrl": "https://lunava-sand.vercel.app",
-    "imageUrl": "https://lunava-sand.vercel.app/api/opengraph-image",
+    "imageUrl": "https://lunava-sand.vercel.app/home.png",
     "buttonTitle": "🎨 Generate Card",
     "splashImageUrl": "https://lunava-sand.vercel.app/splash.png",
     "splashBackgroundColor": "#8b5cf6",
