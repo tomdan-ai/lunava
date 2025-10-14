@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import App from "./app";
-import { APP_NAME, APP_DESCRIPTION, APP_URL, APP_OG_IMAGE_URL } from "~/lib/constants";
+import { APP_NAME, APP_DESCRIPTION, APP_URL } from "~/lib/constants";
 
 export async function generateMetadata(): Promise<Metadata> {
   const miniAppEmbed = {
     version: "1",
-    imageUrl: `${APP_URL}/api/opengraph-image`,
+    imageUrl: `${APP_URL}/api/thumbnail`, // Using dedicated thumbnail
     button: {
       title: "🎨 Create Profile Card",
       action: {
@@ -28,9 +28,9 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: APP_NAME,
       images: [
         {
-          url: APP_OG_IMAGE_URL || `${APP_URL}/api/opengraph-image`,
+          url: `${APP_URL}/api/thumbnail`,
           width: 1200,
-          height: 630,
+          height: 800,
           alt: APP_NAME,
         },
       ],
@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: APP_NAME,
       description: APP_DESCRIPTION,
-      images: [APP_OG_IMAGE_URL || `${APP_URL}/api/opengraph-image`],
+      images: [`${APP_URL}/api/thumbnail`],
     },
     other: {
       "fc:miniapp": JSON.stringify(miniAppEmbed),
